@@ -1,14 +1,16 @@
 "use client";
 import { Provider } from "react-redux";
-import { store } from "@/app/state_manager/store";
-import { useState, useEffect } from "react";
+import { store } from "@/lib/state_manager/store";
+import { useState, useEffect, Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Oval } from "react-loader-spinner";
 import {
   getProduct,
   getProductData,
   getProductStatus,
-} from "@/app/state_manager/reducers/productSlice";
+} from "@/lib/state_manager/reducers/productSlice";
 
 const ClothesWraper = () => {
   return (
@@ -24,6 +26,7 @@ const Clothes = () => {
   const productStatus = useSelector(getProductStatus);
 
   const [data, setData] = useState();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     dispatch(getProduct());
@@ -32,6 +35,7 @@ const Clothes = () => {
   useEffect(() => {
     if (productStatus === "success") {
       setData(productData);
+      setIsLoading(false);
     }
   }, [productStatus]);
 
@@ -42,18 +46,25 @@ const Clothes = () => {
           <Link href={"/product"}>Back</Link>
         </h3>
       </div>
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        {data?.products?.map((data, index) => (
-          <Link href={`/product/item-one/${data.id}`} key={index}>
-            <div
-              className="border border-gray-400 rounded"
-              style={{ padding: 20 }}
-            >
-              <span style={{ cursor: "pointer" }}>{data.title}</span>
-            </div>
-          </Link>
-        ))}
-      </div>
+      {!isLoading ? (
+        <div className="grid grid-cols-4 gap-4 mb-6">
+          {data?.products?.map((data, index) => (
+            <Link href={`/product/item-one/${data.id}`}>
+              <div
+                key={index}
+                className="border border-gray-400 rounded"
+                style={{ padding: 20, cursor: "pointer" }}
+              >
+                <span>{data.title}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Oval color={"red"} secondaryColor={"black"} height={300} />
+        </div>
+      )}
     </main>
   );
 };

@@ -1,15 +1,16 @@
 "use client";
 import { Provider } from "react-redux";
-import { store } from "@/app/state_manager/store";
+import { store } from "@/lib/state_manager/store";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Oval } from "react-loader-spinner";
+import Image from "next/image";
 import Link from "next/link";
 import {
   getProductDetail,
   getProductDetailData,
   getProductDetailStatus,
-} from "@/app/state_manager/reducers/productDetailSlice";
+} from "@/lib/state_manager/reducers/productDetailSlice";
 
 const DetailProductWraper = ({ params }) => {
   return (
@@ -20,11 +21,12 @@ const DetailProductWraper = ({ params }) => {
 };
 
 const DetailProductOne = ({ params }) => {
+  const id = params.productId;
+
   const dispatch = useDispatch();
   const detailData = useSelector(getProductDetailData);
   const detailStatus = useSelector(getProductDetailStatus);
 
-  const id = params.productId;
   const [data, setData] = useState();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -52,7 +54,7 @@ const DetailProductOne = ({ params }) => {
       <div className="flex flex-col">
         <div className="inline-block align-middle flex flex-row justify-center">
           {!isLoading ? (
-            <img src={data?.images[0]} style={{ height: 250 }} />
+            <Image src={data?.images[0]} width={300} height={300} />
           ) : (
             <Oval
               color={"red"}
